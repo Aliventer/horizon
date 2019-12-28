@@ -5,6 +5,8 @@ import discord
 import sys
 import traceback
 
+import config
+
 description = 'A multi-purpose bot created by Aliventer#5827 with Python and <3.'
 
 initial_extensions = (
@@ -51,6 +53,9 @@ class Horizon(commands.Bot):
     async def on_message(self, message):
         if not message.author.bot:
             await self.process_commands(message)
+    
+    async def run(self):
+        super().run(config.token, reconnect=True)
 
     async def close(self):
         await super().close()
