@@ -2,7 +2,7 @@ from bot import Horizon
 
 
 def run():
-    horizon = Horizon(db=None)
+    horizon = Horizon()
     horizon.run()
 
 

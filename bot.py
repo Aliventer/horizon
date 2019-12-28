@@ -16,7 +16,7 @@ initial_extensions = (
 
 
 class Horizon(commands.Bot):
-    def __init__(self, db):
+    def __init__(self):
         super().__init__(command_prefix='$', description=description, case_insensitive=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
 
