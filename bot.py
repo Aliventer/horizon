@@ -55,7 +55,7 @@ class Horizon(commands.Bot):
         if not message.author.bot:
             await self.process_commands(message)
 
-    async def run(self):
+    def run(self):
         super().run(config.token, reconnect=True)
 
     async def close(self):
