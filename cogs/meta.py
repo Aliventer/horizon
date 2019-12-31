@@ -1,9 +1,10 @@
-from discord.ext import commands
-import discord
 import itertools
 
-from cogs.utils.paginator import Pages
-from cogs.utils.converters import to_separate_args
+from discord.ext import commands
+import discord
+
+from .utils.paginator import Pages
+from .utils.converters import to_separate_args
 
 
 class HelpPaginator(Pages):

@@ -1,7 +1,8 @@
-from discord.ext import commands
 import typing
 
-from cogs.utils.paginator import Pages
+from discord.ext import commands
+
+from .utils.paginator import Pages
 
 
 class StackOverflow(commands.Cog):
