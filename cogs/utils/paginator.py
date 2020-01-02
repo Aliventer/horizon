@@ -180,3 +180,32 @@ class Pages:
                 pass
 
             await self.match()
+
+
+class HelpPaginator(Pages):
+    def __init__(self, help_command, ctx, entries, *, per_page=4):
+        super().__init__(ctx, entries=entries, per_page=per_page)
+        self.total = len(entries)
+        self.help_command = help_command
+        self.prefix = help_command.clean_prefix
+        self.is_bot = False
+
+    def get_bot_page(self, page):
+        cog, description, commands = self.entries[page - 1]
+        self.title = f'{cog} Commands'
+        self.description = description
+        return commands
+
+    def prepare_embed(self, entries, page, *, first=False):
+        self.embed.clear_fields()
+        self.embed.description = self.description
+        self.embed.title = self.title
+
+        self.embed.set_footer(text=f'Use "{self.prefix}help command" for more info on a command.')
+
+        for entry in entries:
+            signature = f'{entry.qualified_name} {entry.signature}'
+            self.embed.add_field(name=signature, value=entry.short_doc or "No help given", inline=False)
+
+        if self.maximum_pages:
+            self.embed.set_author(name=f'Page {page}/{self.maximum_pages} ({self.total} commands)')
