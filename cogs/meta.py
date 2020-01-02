@@ -108,7 +108,7 @@ class Meta(commands.Cog):
     @commands.guild_only()
     async def poll(self, ctx, *, question_and_options: to_separate_args):
         """Makes a poll quickly.
-        The first argument is the question and the rest are the choices.
+        The first argument is the question and the rest are the options.
         Arguments are separated by "|".
         """
         if len(question_and_options) > 11:
