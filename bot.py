@@ -18,9 +18,18 @@ initial_extensions = (
 )
 
 
+def _prefix_callable(bot, msg):
+    user_id = bot.user.id
+    base = ['hz ', f'<@!{user_id}> ', f'<@{user_id}> ']
+    if msg.guild is None:
+        base.append('!')
+        base.append('?')
+    return base
+
+
 class Horizon(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='$', description=description, case_insensitive=True)
+        super().__init__(command_prefix=_prefix_callable, description=description, case_insensitive=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
 
         for ext in initial_extensions:
