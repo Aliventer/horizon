@@ -10,7 +10,6 @@ from .utils.converters import to_separate_args
 class HelpPaginator(Pages):
     def __init__(self, help_command, ctx, entries, *, per_page=4):
         super().__init__(ctx, entries=entries, per_page=per_page)
-        self.reaction_emojis.append(('\N{WHITE QUESTION MARK ORNAMENT}', self.show_bot_help))
         self.total = len(entries)
         self.help_command = help_command
         self.prefix = help_command.clean_prefix
@@ -62,6 +61,8 @@ class PaginatedHelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping):
         def key(c):
+            # use zero-width space to put "No Category" at the
+            # beginning after sorting.
             return c.cog_name or '\u200bNo Category'
 
         bot = self.context.bot
