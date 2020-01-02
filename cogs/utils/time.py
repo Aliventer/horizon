@@ -23,7 +23,7 @@ class ShortTime:
     def __init__(self, argument, *, now=None):
         match = self.compiled.fullmatch(argument)
         if match is None or not match.group(0):
-            raise commands.BadArgument('invalid time provided')
+            raise commands.BadArgument('Invalid time provided')
 
         data = {k: int(v) for k, v in match.groupdict(default=0).items()}
         now = now or datetime.datetime.utcnow()
@@ -41,7 +41,7 @@ class HumanTime:
         now = now or datetime.datetime.utcnow()
         dt, status = self.calendar.parseDT(argument, sourceTime=now)
         if not status.hasDateOrTime:
-            raise commands.BadArgument('invalid time provided, try e.g. "tomorrow" or "3 days"')
+            raise commands.BadArgument('Invalid time provided, try e.g. "tomorrow" or "3 days"')
 
         if not status.hasTime:
             # replace it with the current time
@@ -71,7 +71,7 @@ class FutureTime(Time):
         super().__init__(argument, now=now)
 
         if self._past:
-            raise commands.BadArgument('this time is in the past')
+            raise commands.BadArgument('This time is in the past')
 
 
 class UserFriendlyTime(commands.Converter):
