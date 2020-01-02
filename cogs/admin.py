@@ -5,6 +5,8 @@ import traceback
 
 from discord.ext import commands
 
+from .utils.converters import prepare_bot_module
+
 
 class Admin(commands.Cog):
     """Admin-only commands."""
@@ -30,7 +32,7 @@ class Admin(commands.Cog):
             await ctx.send(reaction_string)
 
     @commands.command(hidden=True)
-    async def load(self, ctx, *, module):
+    async def load(self, ctx, *, module: prepare_bot_module):
         """Loads a module."""
         try:
             self.bot.load_extension(module)
@@ -40,7 +42,7 @@ class Admin(commands.Cog):
             await self.message_or_reaction(ctx, '\u2705')
 
     @commands.command(hidden=True)
-    async def unload(self, ctx, *, module):
+    async def unload(self, ctx, *, module: prepare_bot_module):
         """Unloads a module."""
         try:
             self.bot.unload_extension(module)
@@ -50,10 +52,8 @@ class Admin(commands.Cog):
             await self.message_or_reaction(ctx, '\u2705')
 
     @commands.command(hidden=True)
-    async def reload(self, ctx, *, module):
+    async def reload(self, ctx, *, module: prepare_bot_module):
         """Reloads a module."""
-        if not module.startswith('cogs.'):
-            module = 'cogs.' + module
         try:
             self.bot.reload_extension(module)
         except commands.ExtensionError as e:
