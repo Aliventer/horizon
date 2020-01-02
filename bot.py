@@ -13,6 +13,7 @@ description = 'A multi-purpose bot created by Aliventer#5827 with Python and <3.
 initial_extensions = (
     'cogs.meta',
     'cogs.stackoverflow',
+    'cogs.jap',
 )
 
 
