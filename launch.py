@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import asyncio
 try:
     import uvloop
 except ImportError:
@@ -7,11 +7,17 @@ except ImportError:
 else:
     uvloop.install()
 
+import config
 from bot import Horizon
+from cogs.utils import db
 
 
 def run():
+    loop = asyncio.get_event_loop()
+    pool = loop.run_until_complete(db.create_pool(config.credentials))
+
     horizon = Horizon()
+    horizon.pool = pool
     horizon.run()
 
 

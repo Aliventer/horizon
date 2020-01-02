@@ -29,6 +29,14 @@ class Horizon(commands.Bot):
                 print(f'Failed to load extension {ext}:', file=sys.stderr)
                 traceback.print_exc()
 
+        async def init_database():
+            async with self.pool.acquire() as conn:
+                for cog in self.cogs.values():
+                    if hasattr(cog, 'init_table') and callable(cog.init_table):
+                        await cog.init_table(conn)
+
+        self.loop.create_task(init_database())
+
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.NoPrivateMessage):
             await ctx.author.send('This command cannot be used in private messages.')
