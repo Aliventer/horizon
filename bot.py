@@ -58,7 +58,7 @@ class Horizon(commands.Bot):
                 print(f'In {ctx.command.qualified_name}:', file=sys.stderr)
                 traceback.print_tb(original.__traceback__)
                 print(f'{original.__class__.__name__}: {original}', file=sys.stderr)
-        elif isinstance(error, commands.UserInputError):
+        elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
             await ctx.send_help(ctx.command)
 
     async def on_ready(self):
