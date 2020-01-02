@@ -26,7 +26,7 @@ class Horizon(commands.Bot):
             try:
                 self.load_extension(ext)
             except Exception:
-                print(f'Failed to load extension {ext}.', file=sys.stderr)
+                print(f'Failed to load extension {ext}:', file=sys.stderr)
                 traceback.print_exc()
 
     async def on_command_error(self, ctx, error):
@@ -41,7 +41,7 @@ class Horizon(commands.Bot):
                 traceback.print_tb(original.__traceback__)
                 print(f'{original.__class__.__name__}: {original}', file=sys.stderr)
         elif isinstance(error, commands.UserInputError):
-            await ctx.send(error)
+            await ctx.send_help(ctx.command)
 
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
