@@ -16,7 +16,7 @@ class StackOverflow(commands.Cog):
 
     @commands.command()
     async def search(self, ctx, size: typing.Optional[int] = 15, *, query):
-        """Search for a given problem on StackOverflow"""
+        """Search for a given query on StackOverflow"""
         response = await self.send_request(size, query)
         for item in response['items']:
             pass
