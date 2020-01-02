@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+try:
+    import uvloop
+except ImportError:
+    pass
+else:
+    uvloop.install()
+
 from bot import Horizon
 
 
