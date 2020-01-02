@@ -15,6 +15,7 @@ initial_extensions = (
     'cogs.stackoverflow',
     'cogs.jap',
     'cogs.reminder',
+    'cogs.admin',
 )
 
 
@@ -52,6 +53,8 @@ class Horizon(commands.Bot):
             await ctx.author.send('This command cannot be used in private messages.')
         elif isinstance(error, commands.DisabledCommand):
             await ctx.author.send('This command is disabled and cannot be used.')
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send(f'{ctx.author.name}#{ctx.author.discriminator} is not in the sudoers file. This incident will be reported.')
         elif isinstance(error, commands.CommandInvokeError):
             original = error.original
             if not isinstance(original, discord.HTTPException):
