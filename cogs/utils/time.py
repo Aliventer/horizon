@@ -1,4 +1,5 @@
 # mostly from https://github.com/Rapptz/RoboDanny
+
 import datetime
 
 from discord.ext import commands
@@ -24,7 +25,7 @@ class ShortTime:
         if match is None or not match.group(0):
             raise commands.BadArgument('invalid time provided')
 
-        data = { k: int(v) for k, v in match.groupdict(default=0).items() }
+        data = {k: int(v) for k, v in match.groupdict(default=0).items()}
         now = now or datetime.datetime.utcnow()
         self.dt = now + relativedelta(**data)
 
@@ -138,8 +139,8 @@ class UserFriendlyTime(commands.Converter):
                 raise commands.BadArgument('Invalid time provided, try e.g. "tomorrow" or "3 days".')
 
             if begin not in (0, 1) and end != len(argument):
-                raise commands.BadArgument('Time is either in an inappropriate location, which ' \
-                                           'must be either at the end or beginning of your input, ' \
+                raise commands.BadArgument('Time is either in an inappropriate location, which '
+                                           'must be either at the end or beginning of your input, '
                                            'or I just flat out did not understand what you meant. Sorry.')
 
             if not status.hasTime:
