@@ -14,6 +14,7 @@ initial_extensions = (
     'cogs.meta',
     'cogs.stackoverflow',
     'cogs.jap',
+    'cogs.reminder',
 )
 
 
