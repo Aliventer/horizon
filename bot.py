@@ -79,7 +79,7 @@ class Horizon(commands.Bot):
 
         print(
             f'Logged in as {self.user.name}#{self.user.discriminator} '
-            '(ID: {self.user.id})')
+            f'(ID: {self.user.id})')
 
     async def on_resumed(self):
         print(f'\n[*] {self.user} resumed...')

@@ -26,7 +26,7 @@ class Jap(commands.Cog):
             parsed = await r.json()
             return parsed['url']
 
-    async def fetch_img(self) -> BytesIO:
+    async def fetch_img(self) -> bytes:
         img_url = await self.get_img_url()
         async with self.bot.session.get(img_url) as r:
             if r.status != 200:
@@ -38,13 +38,13 @@ class Jap(commands.Cog):
         return BytesIO(raw_img_bytes)
 
     @staticmethod
-    def processing(img_buffer: BytesIO, string: str) -> BytesIO:
+    def processing(img_bytes: bytes, string: str) -> BytesIO:
         size = 500
         border_width = 2
         border_color = '#1A2026'
         text_color = '#F2F4F6'
 
-        with Image.open(img_buffer).convert('RGB') as im:
+        with Image.open(BytesIO(img_bytes)).convert('RGB') as im:
             with ImageOps.fit(im, (size, size), method=3) as normalized:
                 draw = ImageDraw.Draw(normalized)
                 font_size = int(0.9 * size / len(string))

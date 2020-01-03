@@ -1,4 +1,4 @@
-# mostly from https://github.com/Rapptz/RoboDanny
+# all credits to https://github.com/Rapptz/RoboDanny
 
 import datetime
 import re
