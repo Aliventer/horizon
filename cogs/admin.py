@@ -62,7 +62,7 @@ class Admin(commands.Cog):
             await self.message_or_reaction(ctx, '\u2705')
 
     @commands.command(name='eval', pass_context=True, hidden=True)
-    async def _eval(self, ctx, *, body: str):
+    async def eval_(self, ctx, *, body: str):
         """Evaluates a code."""
 
         env = {
