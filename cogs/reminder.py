@@ -78,8 +78,8 @@ class Reminder(commands.Cog):
             await ctx.send(error)
 
     async def get_active_timer(self, *, connection=None, days=7):
-        query = "SELECT * FROM reminders WHERE ' \
-            'expires < (CURRENT_DATE + $1::interval) ORDER BY expires LIMIT 1;"
+        query = 'SELECT * FROM reminders WHERE ' \
+            'expires < (CURRENT_DATE + $1::interval) ORDER BY expires LIMIT 1;'
         conn = connection or self.bot.pool
 
         record = await conn.fetchrow(query, datetime.timedelta(days=days))
@@ -99,7 +99,7 @@ class Reminder(commands.Cog):
             return await self.get_active_timer(connection=conn, days=days)
 
     async def call_timer(self, timer):
-        query = "DELETE FROM reminders WHERE id=$1;"
+        query = 'DELETE FROM reminders WHERE id=$1;'
         await self.bot.pool.execute(query, timer.id)
 
         event_name = f'{timer.event}_timer_complete'
@@ -175,6 +175,7 @@ class Reminder(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reminder_timer_complete(self, timer):
+        await self.bot.wait_until_ready()
         author_id, channel_id, message = timer.args
 
         try:
@@ -190,7 +191,7 @@ class Reminder(commands.Cog):
 
         if message_id:
             msg = f'{msg}\n\n<https://discordapp.com/channels/{guild_id}/' \
-                '{channel.id}/{message_id}>'
+                f'{channel.id}/{message_id}>'
 
         try:
             await channel.send(msg)
@@ -219,7 +220,7 @@ class Reminder(commands.Cog):
                                         created=ctx.message.created_at,
                                         message_id=ctx.message.id)
         delta = time.human_timedelta(when.dt, source=timer.created_at)
-        await ctx.send(f"Alright {ctx.author.mention}, in {delta}: {when.arg}")
+        await ctx.send(f'Alright {ctx.author.mention}, in {delta}: {when.arg}')
 
     @reminder.command(name='list')
     async def reminder_list(self, ctx):
