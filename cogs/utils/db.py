@@ -22,6 +22,6 @@ class MaybeAcquire:
 
 async def create_pool(credentials):
     async def init(conn):
-        await conn.set_type_codec('jsonb', schema='pg_catalog', encoder=json.dumps, decoder=json.load, format='text')
+        await conn.set_type_codec('jsonb', schema='pg_catalog', encoder=json.dumps, decoder=json.loads, format='text')
 
     return await asyncpg.create_pool(**credentials, init=init)
