@@ -1,7 +1,7 @@
-from contextlib import redirect_stdout
-from io import StringIO
 import textwrap
 import traceback
+from contextlib import redirect_stdout
+from io import StringIO
 
 from discord.ext import commands
 
@@ -10,6 +10,7 @@ from .utils.converters import prepare_bot_module
 
 class Admin(commands.Cog):
     """Admin-only commands."""
+
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None

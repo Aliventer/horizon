@@ -1,14 +1,15 @@
 import asyncio
+
+import config
+from bot import Horizon
+from cogs.utils import db
+
 try:
     import uvloop
 except ImportError:
     pass
 else:
     uvloop.install()
-
-import config
-from bot import Horizon
-from cogs.utils import db
 
 
 def run():

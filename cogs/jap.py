@@ -1,10 +1,10 @@
-from io import BytesIO
-from functools import partial
-from itertools import product
 import time
+from functools import partial
+from io import BytesIO
+from itertools import product
 
-from discord.ext import commands
 import discord
+from discord.ext import commands
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
@@ -20,7 +20,8 @@ class Jap(commands.Cog):
         base_url = 'https://neko-love.xyz/api/v1/neko'
         async with self.bot.session.get(base_url) as r:
             if r.status != 200:
-                raise APIError(f'Failed to get an image link. Status code: {r.status}.')
+                raise APIError(
+                    f'Failed to get an image link. Status code: {r.status}.')
 
             parsed = await r.json()
             return parsed['url']
@@ -29,7 +30,9 @@ class Jap(commands.Cog):
         img_url = await self.get_img_url()
         async with self.bot.session.get(img_url) as r:
             if r.status != 200:
-                raise APIError(f'Failed to fetch the image. Status code: {r.status}, URL: {img_url}.')
+                raise APIError(
+                    f'Failed to fetch the image. Status code: {r.status}, '
+                    f'URL: {img_url}.')
 
             raw_img_bytes = await r.read()
         return BytesIO(raw_img_bytes)
@@ -48,10 +51,14 @@ class Jap(commands.Cog):
                 font = ImageFont.truetype('fonts/KosugiMaru.ttf', font_size)
 
                 text_w, text_h = font.getsize(string)
-                for dx, dy in product(range(-border_width, border_width + 1), repeat=2):
-                    draw.text(((size - text_w) / 2 + dx, (size - text_h) / 2 + dy), string, font=font, fill=border_color)
+                for dx, dy in product(range(-border_width, border_width + 1),
+                                      repeat=2):
+                    draw.text(((size - text_w) / 2 + dx,
+                               (size - text_h) / 2 + dy),
+                              string, font=font, fill=border_color)
 
-                draw.text(((size - text_w) / 2, (size - text_h) / 2), string, font=font, fill=text_color)
+                draw.text(((size - text_w) / 2, (size - text_h) / 2),
+                          string, font=font, fill=text_color)
 
                 final_buffer = BytesIO()
                 normalized.save(final_buffer, 'PNG')
@@ -79,7 +86,8 @@ class Jap(commands.Cog):
     @test.error
     async def test_error(self, ctx, error):
         if isinstance(error, APIError):
-            await ctx.send('Cannot load background image atm. Try again later?')
+            await ctx.send('Cannot load background image atm. '
+                           'Try again later?')
 
 
 def setup(bot):

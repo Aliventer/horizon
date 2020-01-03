@@ -30,6 +30,7 @@ class Pages:
     permissions: discord.Permissions
         Our permissions for the channel.
     """
+
     def __init__(self, ctx, *, entries, per_page=12, show_entry_count=True):
         self.bot = ctx.bot
         self.entries = entries
@@ -45,10 +46,12 @@ class Pages:
         self.paginating = len(entries) > per_page
         self.show_entry_count = show_entry_count
         self.reaction_emojis = [
-            ('\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}', self.first_page),
+            ('\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}',
+             self.first_page),
             ('\N{BLACK LEFT-POINTING TRIANGLE}', self.previous_page),
             ('\N{BLACK RIGHT-POINTING TRIANGLE}', self.next_page),
-            ('\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}', self.last_page),
+            ('\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}',
+             self.last_page),
             ('\N{BLACK SQUARE FOR STOP}', self.stop_pages)
         ]
 
@@ -65,10 +68,12 @@ class Pages:
 
         if self.paginating:
             if not self.permissions.add_reactions:
-                raise CannotPaginate('Bot does not have Add Reactions permission.')
+                raise CannotPaginate(
+                    'Bot does not have Add Reactions permission.')
 
             if not self.permissions.read_message_history:
-                raise CannotPaginate('Bot does not have Read Message History permission.')
+                raise CannotPaginate(
+                    'Bot does not have Read Message History permission.')
 
     def get_page(self, page):
         base = (page - 1) * self.per_page
@@ -80,12 +85,14 @@ class Pages:
 
     def prepare_embed(self, entries, page, *, first=False):
         p = []
-        for index, entry in enumerate(entries, 1 + ((page - 1) * self.per_page)):
+        for index, entry in enumerate(entries,
+                                      1 + ((page - 1) * self.per_page)):
             p.append(f'{index}. {entry}')
 
         if self.maximum_pages > 1:
             if self.show_entry_count:
-                text = f'Page {page}/{self.maximum_pages} ({len(self.entries)} entries)'
+                text = f'Page {page}/{self.maximum_pages} ' \
+                    '({len(self.entries)} entries)'
             else:
                 text = f'Page {page}/{self.maximum_pages}'
 
@@ -164,7 +171,9 @@ class Pages:
 
         while self.paginating:
             try:
-                payload = await self.bot.wait_for('raw_reaction_add', check=self.react_check, timeout=120.0)
+                payload = await self.bot.wait_for('raw_reaction_add',
+                                                  check=self.react_check,
+                                                  timeout=120.0)
             except asyncio.TimeoutError:
                 self.paginating = False
                 try:
@@ -175,7 +184,9 @@ class Pages:
                     break
 
             try:
-                await self.message.remove_reaction(payload.emoji, discord.Object(id=payload.user_id))
+                await self.message.remove_reaction(payload.emoji,
+                                                   discord.Object(
+                                                       id=payload.user_id))
             except:
                 pass
 
@@ -201,11 +212,17 @@ class HelpPaginator(Pages):
         self.embed.description = self.description
         self.embed.title = self.title
 
-        self.embed.set_footer(text=f'Use "{self.prefix}help command" for more info on a command.')
+        self.embed.set_footer(
+            text=f'Use "{self.prefix}help command" '
+                 f'for more info on a command.')
 
         for entry in entries:
             signature = f'{entry.qualified_name} {entry.signature}'
-            self.embed.add_field(name=signature, value=entry.short_doc or "No help given", inline=False)
+            self.embed.add_field(
+                name=signature, value=entry.short_doc or "No help given",
+                inline=False)
 
         if self.maximum_pages:
-            self.embed.set_author(name=f'Page {page}/{self.maximum_pages} ({self.total} commands)')
+            self.embed.set_author(
+                name=f'Page {page}/{self.maximum_pages} '
+                     f'({self.total} commands)')

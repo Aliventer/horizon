@@ -10,7 +10,8 @@ class StackOverflow(commands.Cog):
         self.bot = bot
 
     async def send_request(self, size, q):
-        url = 'https://api.stackexchange.com/2.2/search/advanced?pagesize={}&order=desc&sort=relevance&q={}&site=stackoverflow'
+        url = 'https://api.stackexchange.com/2.2/search/advanced?pagesize={}' \
+            '&order=desc&sort=relevance&q={}&site=stackoverflow'
         async with self.bot.session.get(url.format(size, q)) as r:
             return await r.json()
 
@@ -23,8 +24,11 @@ class StackOverflow(commands.Cog):
 
         entries = [f'[{r["title"]}]({r["link"]})' for r in response['items']]
         p = Pages(ctx, entries=entries, per_page=10, show_entry_count=False)
-        p.embed.set_thumbnail(url='https://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-icon.png')
-        p.embed.set_author(name=ctx.author.display_name + '#' + ctx.author.discriminator, icon_url=str(ctx.author.avatar_url))
+        p.embed.set_thumbnail(
+            url='https://cdn.sstatic.net/Sites/stackoverflow/'
+                'company/img/logos/so/so-icon.png')
+        full_name = ctx.author.display_name + '#' + ctx.author.discriminator
+        p.embed.set_author(name=full_name, icon_url=str(ctx.author.avatar_url))
         await p.paginate()
 
 

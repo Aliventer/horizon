@@ -1,13 +1,13 @@
 import asyncio
-import asyncpg
 import datetime
-
-from discord.ext import commands
-import discord
 import textwrap
 
-from .utils.db import MaybeAcquire
+import asyncpg
+import discord
+from discord.ext import commands
+
 from .utils import time
+from .utils.db import MaybeAcquire
 
 
 class Timer:
@@ -48,7 +48,8 @@ class Timer:
         return time.human_timedelta(self.created_at)
 
     def __repr__(self):
-        return f'<Timer created={self.created_at} expires={self.expires} event={self.event}>'
+        return f'<Timer created={self.created_at} ' \
+               f'expires={self.expires} event={self.event}>'
 
 
 class Reminder(commands.Cog):
@@ -77,14 +78,16 @@ class Reminder(commands.Cog):
             await ctx.send(error)
 
     async def get_active_timer(self, *, connection=None, days=7):
-        query = "SELECT * FROM reminders WHERE expires < (CURRENT_DATE + $1::interval) ORDER BY expires LIMIT 1;"
+        query = "SELECT * FROM reminders WHERE ' \
+            'expires < (CURRENT_DATE + $1::interval) ORDER BY expires LIMIT 1;"
         conn = connection or self.bot.pool
 
         record = await conn.fetchrow(query, datetime.timedelta(days=days))
         return Timer(record=record) if record else None
 
     async def wait_for_active_timers(self, *, connection=None, days=7):
-        async with MaybeAcquire(connection=connection, pool=self.bot.pool) as conn:
+        async with MaybeAcquire(connection=connection,
+                                pool=self.bot.pool) as conn:
             timer = await self.get_active_timer(connection=conn, days=days)
             if timer is not None:
                 self._have_data.set()
@@ -107,7 +110,8 @@ class Reminder(commands.Cog):
             while not self.bot.is_closed():
                 # can only asyncio.sleep for up to ~48 days
                 # see: http://bugs.python.org/issue20493
-                timer = self._current_timer = await self.wait_for_active_timers(days=40)
+                timer = self._current_timer = \
+                    await self.wait_for_active_timers(days=40)
                 now = datetime.datetime.utcnow()
 
                 if timer.expires >= now:
@@ -117,7 +121,8 @@ class Reminder(commands.Cog):
                 await self.call_timer(timer)
         except asyncio.CancelledError:
             raise
-        except (OSError, discord.ConnectionClosed, asyncpg.PostgresConnectionError):
+        except (OSError, discord.ConnectionClosed,
+                asyncpg.PostgresConnectionError):
             self._task.cancel()
             self._task = self.bot.loop.create_task(self.dispatch_timers())
 
@@ -139,10 +144,12 @@ class Reminder(commands.Cog):
         except KeyError:
             now = datetime.datetime.utcnow()
 
-        timer = Timer.temporary(event=event, args=args, kwargs=kwargs, expires=when, created=now)
+        timer = Timer.temporary(event=event, args=args,
+                                kwargs=kwargs, expires=when, created=now)
         delta = (when - now).total_seconds()
         if delta <= 60:
-            self.bot.loop.create_task(self.short_timer_optimisation(delta, timer))
+            self.bot.loop.create_task(
+                self.short_timer_optimisation(delta, timer))
             return timer
 
         query = """INSERT INTO reminders (event, extra, expires, created)
@@ -150,7 +157,11 @@ class Reminder(commands.Cog):
                    RETURNING id;
                 """
 
-        row = await connection.fetchrow(query, event, {'args': args, 'kwargs': kwargs}, when, now)
+        row = await connection.fetchrow(query,
+                                        event,
+                                        {'args': args, 'kwargs': kwargs},
+                                        when,
+                                        now)
         timer.id = row[0]
 
         if delta <= (86400 * 40):  # 40 days
@@ -167,24 +178,30 @@ class Reminder(commands.Cog):
         author_id, channel_id, message = timer.args
 
         try:
-            channel = self.bot.get_channel(channel_id) or (await self.bot.fetch_channel(channel_id))
+            channel = self.bot.get_channel(channel_id) or \
+                (await self.bot.fetch_channel(channel_id))
         except discord.HTTPException:
             return
 
-        guild_id = channel.guild.id if isinstance(channel, discord.TextChannel) else '@me'
+        guild_id = channel.guild.id if isinstance(
+            channel, discord.TextChannel) else '@me'
         message_id = timer.kwargs.get('message_id')
         msg = f'<@{author_id}>, {timer.human_delta}: {message}'
 
         if message_id:
-            msg = f'{msg}\n\n<https://discordapp.com/channels/{guild_id}/{channel.id}/{message_id}>'
+            msg = f'{msg}\n\n<https://discordapp.com/channels/{guild_id}/' \
+                '{channel.id}/{message_id}>'
 
         try:
             await channel.send(msg)
         except discord.HTTPException:
             return
 
-    @commands.group(aliases=['timer', 'remind'], usage='<when>', invoke_without_command=True)
-    async def reminder(self, ctx, *, when: time.UserFriendlyTime(commands.clean_content, default='\u2026')):
+    @commands.group(aliases=['timer', 'remind'], usage='<when>',
+                    invoke_without_command=True)
+    async def reminder(self, ctx, *,
+                       when: time.UserFriendlyTime(commands.clean_content,
+                                                   default='\u2026')):
         """Reminds you of something after a certain amount of time.
         The input can be any direct date (e.g. YYYY-MM-DD) or a human
         readable offset. Examples:
@@ -196,11 +213,11 @@ class Reminder(commands.Cog):
         """
 
         timer = await self.create_timer(when.dt, 'reminder', ctx.author.id,
-                                                             ctx.channel.id,
-                                                             when.arg,
-                                                             connection=self.bot.pool,
-                                                             created=ctx.message.created_at,
-                                                             message_id=ctx.message.id)
+                                        ctx.channel.id,
+                                        when.arg,
+                                        connection=self.bot.pool,
+                                        created=ctx.message.created_at,
+                                        message_id=ctx.message.id)
         delta = time.human_timedelta(when.dt, source=timer.created_at)
         await ctx.send(f"Alright {ctx.author.mention}, in {delta}: {when.arg}")
 
@@ -225,11 +242,16 @@ class Reminder(commands.Cog):
         if len(records) == 10:
             e.set_footer(text='Only showing up to 10 reminders.')
         else:
-            e.set_footer(text=f'{len(records)} reminder{"s" if len(records) > 1 else ""}')
+            e.set_footer(
+                text=f'{len(records)} reminder '
+                     f'{"s" if len(records) > 1 else ""}')
 
         for _id, expires, message in records:
             shorten = textwrap.shorten(message, width=512)
-            e.add_field(name=f'{_id}: In {time.human_timedelta(expires)}', value=shorten, inline=False)
+            e.add_field(
+                name=f'{_id}: In {time.human_timedelta(expires)}',
+                value=shorten,
+                inline=False)
 
         await ctx.send(embed=e)
 
@@ -248,7 +270,8 @@ class Reminder(commands.Cog):
 
         status = await self.bot.pool.execute(query, id, str(ctx.author.id))
         if status == 'DELETE 0':
-            return await ctx.send('Could not delete any reminders with that ID.')
+            return await ctx.send(
+                'Could not delete any reminders with that ID.')
 
         # if the current timer is being deleted
         if self._current_timer and self._current_timer.id == id:

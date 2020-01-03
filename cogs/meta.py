@@ -1,10 +1,10 @@
 import itertools
 
-from discord.ext import commands
 import discord
+from discord.ext import commands
 
-from .utils.paginator import HelpPaginator
 from .utils.converters import to_separate_args
+from .utils.paginator import HelpPaginator
 
 
 class PaginatedHelpCommand(commands.HelpCommand):
@@ -49,9 +49,13 @@ class PaginatedHelpCommand(commands.HelpCommand):
 
             total += len(cmds)
             actual_cog = bot.get_cog(cog)
-            # get the description if it exists (and the cog is valid) or return Empty embed.
-            description = (actual_cog and actual_cog.description) or discord.Embed.Empty
-            nested_pages.extend((cog, description, cmds[i:i + per_page]) for i in range(0, len(cmds), per_page))
+            # get the description if it exists (and the cog is valid)
+            # or return Empty embed.
+            description = (
+                actual_cog and actual_cog.description) or discord.Embed.Empty
+            nested_pages.extend(
+                (cog, description, cmds[i:i + per_page])
+                for i in range(0, len(cmds), per_page))
 
         pages = HelpPaginator(self, self.context, nested_pages, per_page=1)
 
@@ -71,7 +75,8 @@ class PaginatedHelpCommand(commands.HelpCommand):
     def common_command_formatting(self, page_or_embed, command):
         page_or_embed.title = self.get_command_signature(command)
         if command.description:
-            page_or_embed.description = f'{command.description}\n\n{command.help}'
+            page_or_embed.description = \
+                f'{command.description}\n\n{command.help}'
         else:
             page_or_embed.description = command.help or 'No help found...'
 
@@ -111,19 +116,22 @@ class Meta(commands.Cog):
         The first argument is the question and the rest are the options.
         Arguments are separated by "|".
         """
+
         if len(question_and_options) > 11:
             # since there are only emojis for numbers up to ten
-            return await ctx.send('Cannot create poll with more than 10 options.')
+            return await ctx.send(
+                'Cannot create poll with more than 10 options.')
 
         full_name = ctx.author.display_name + '#' + ctx.author.discriminator
         question = question_and_options[0]
-        options = [f'`{i}.` {o}' for i, o in enumerate(question_and_options[1:], start=1)]
+        options = [f'`{i}.` {o}' for i, o in enumerate(
+            question_and_options[1:], start=1)]
 
         em = discord.Embed(title=question,
                            description='\n'.join(options),
                            colour=discord.Colour.blurple()) \
-             .set_author(name=full_name,
-                         icon_url=str(ctx.author.avatar_url))
+            .set_author(name=full_name,
+                        icon_url=str(ctx.author.avatar_url))
 
         message = await ctx.send(embed=em)
 
@@ -133,11 +141,13 @@ class Meta(commands.Cog):
             pass
 
         if len(options) == 0:
-            for r in ('<:upvote:660327748606099467>', '<:downvote:660327764947107848>'):
+            for r in ('<:upvote:660327748606099467>',
+                      '<:downvote:660327764947107848>'):
                 await message.add_reaction(r)
         else:
             for i in range(1, len(options) + 1):
-                reaction = '\N{keycap ten}' if i == 10 else f'{i}\N{combining enclosing keycap}'
+                reaction = '\N{keycap ten}' if i == 10 else \
+                    f'{i}\N{combining enclosing keycap}'
                 await message.add_reaction(reaction)
 
 
