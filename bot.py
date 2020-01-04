@@ -35,6 +35,8 @@ class Horizon(commands.Bot):
         super().__init__(command_prefix=_prefix_callable,
                          description=description, case_insensitive=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.spam_control = commands.CooldownMapping.from_cooldown(
+            10, 12.0, commands.BucketType.user)
 
         for ext in initial_extensions:
             try:
@@ -83,6 +85,20 @@ class Horizon(commands.Bot):
 
     async def on_resumed(self):
         print(f'\n[*] {self.user} resumed...')
+
+    async def process_commands(self, message):
+        ctx = await self.get_context(message)
+
+        if ctx.command is None:
+            return
+
+        bucket = self.spam_control.get_bucket(message)
+        retry_after = bucket.update_rate_limit()
+        author_id = message.author.id
+        if retry_after and author_id != self.owner_id:
+            await ctx.send('You\'re rate limited. Try again later.')
+        else:
+            await self.invoke(ctx)
 
     async def on_message(self, message):
         if not message.author.bot:
