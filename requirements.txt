@@ -1,5 +1,4 @@
 asyncpg >= 0.20.0
 discord.py >= 1.2.5
-flake8 >= 3.7.9
 parsedatetime >= 2.5
 pillow >= 7.0.0
