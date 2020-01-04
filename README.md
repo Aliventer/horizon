@@ -34,7 +34,7 @@ The next step is just to create a `config.py` file in the root directory
  with the following template:
 
 ```py
-token = '' # your bot's discord token
+token = "" # your bot's discord token
 credentials = { # your postgresql connection info
     "user": "horizon",
     "password": "yourpassword",
