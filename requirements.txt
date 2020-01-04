@@ -2,3 +2,4 @@ asyncpg >= 0.20.0
 discord.py >= 1.2.5
 parsedatetime >= 2.5
 pillow >= 7.0.0
+uvloop >= 0.14.0
